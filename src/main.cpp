@@ -1,17 +1,25 @@
+/**
+ * Class that manages the chat being printed to the dislay.
+ * The ftxui::paragraph is re-rendered when a new message comes in
+ *   The ftxui::Input for the user to type a message should not be re-rendered if possible?
+ */
+
 #include <ftxui/component/component.hpp>
 #include <ftxui/component/component_options.hpp>
 #include <ftxui/component/screen_interactive.hpp>
 #include <ftxui/dom/elements.hpp>
 #include <ftxui/screen/screen.hpp>
 
+#include "chat_buffer.hpp"
+
 int main(void) {
 
-    std::string echo;
+    tui::ChatBuffer chatBuffer(2000);
 
     std::string content;
     ftxui::InputOption opt;
     opt.on_enter = [&]() {
-        echo = content;
+        chatBuffer.add(content);
         content.clear();
     };
     ftxui::Component input = ftxui::Input(&content, opt);
@@ -19,7 +27,7 @@ int main(void) {
 
     auto chatBox = ftxui::Renderer([&] {
         return ftxui::vbox({
-            ftxui::paragraph(echo) | ftxui::border | ftxui::flex,
+            ftxui::paragraph(chatBuffer.get()) | ftxui::border | ftxui::flex,
         });
     });
 
