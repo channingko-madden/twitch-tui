@@ -10,9 +10,40 @@
 #include <ftxui/dom/elements.hpp>
 #include <ftxui/screen/screen.hpp>
 
+#include <toml++/toml.hpp>
+
+#include <iostream>
+#include <optional>
+
 #include "chat_buffer.hpp"
 
 int main(void) {
+
+
+    // read in config
+    toml::table tbl;
+    try
+    {
+        tbl = toml::parse_file("config.toml");
+    }
+    catch (const toml::parse_error& err)
+    {
+        std::cerr << "Parsing confit.toml failed:\n" << err << "\n";
+        return 1;
+    }
+
+    if (!tbl.contains("twitch")) {
+        std::cerr << "twitch table is missing from config.toml" << "\n";
+        return 1;
+    }
+
+    const std::optional<std::string> oauth = tbl["twitch"]["oauth"].value<std::string>();
+
+    if (oauth == std::nullopt) {
+        std::cerr << "twitch table is missing the oauth key in config.toml" << "\n";
+        return 1;
+    }
+
 
     tui::ChatBuffer chatBuffer(2000);
 

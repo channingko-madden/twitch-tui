@@ -1,5 +1,7 @@
 {
   "dependencies": [
-    "ftxui"
+    "ftxui",
+    "tomlplusplus",
+    "boost-beast"
   ]
 }

@@ -12,4 +12,11 @@ cmake --preset=default
 cmake --build build
 ```
 
+## Running
 
+### config.toml
+
+```toml
+[twitch]
+oauth = "..."
+```

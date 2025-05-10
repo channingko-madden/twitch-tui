@@ -38,3 +38,9 @@ build/
 # nvim
 .ignore
 .cache
+
+# config
+config.toml
+
+# vcpkg
+vcpkg_installed/
