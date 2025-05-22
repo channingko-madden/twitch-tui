@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/charmbracelet/bubbletea"
 	"os"
+	"unicode/utf8"
 )
 
 type model struct {
@@ -35,6 +36,14 @@ func initialModel() model {
 	}
 }
 
+func trimLastChar(s string) string {
+	r, size := utf8.DecodeLastRuneInString(s)
+	if r == utf8.RuneError && (size == 0 || size == 1) {
+		size = 0
+	}
+	return s[:len(s)-size]
+}
+
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	// A key press
@@ -42,17 +51,23 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// the key press
 		switch msg.String() {
 
-		// These keys should exit the program.
-		case "ctrl+c", "q":
+		// This should exit the program.
+		case "ctrl+c":
 			return m, tea.Quit
 
 		// The "enter" key to send user msg to twitch chat
 		case "enter":
-			m.ChatMessages = append(m.ChatMessages, "hello world")
+			m.ChatMessages = append(m.ChatMessages, m.UserMsg)
 
 			// Send UserMsg to twitch chat, then clear it on the screen
-			m.UserMsg = "sending "
+			m.UserMsg = ""
+		case "backspace":
+			m.UserMsg = trimLastChar(m.UserMsg)
+
+		default:
+			m.UserMsg += string(msg.Runes)
 		}
+
 	}
 	return m, nil
 }
